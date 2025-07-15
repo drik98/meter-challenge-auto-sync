@@ -23,7 +23,9 @@ const run = async () => {
   const browser = await chromium.launch({
     tracesDir: "traces",
   });
-  const context = await browser.newContext();
+  const context = await browser.newContext({
+    locale: 'en-US'
+  });
   await context.tracing.start({ screenshots: true, snapshots: true });
   const page = await context.newPage();
 
