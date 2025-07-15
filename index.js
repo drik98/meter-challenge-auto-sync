@@ -88,6 +88,8 @@ const run = async () => {
   // Dismiss any lingering tooltip (from the open settings button) by clicking outside
   await page.locator("body").click();
 
+  console.log(await page.content())
+
   // wait until at least one table row is rendered and fail if it is not to avoid sending empty mails
   await page.waitForSelector('table tr.activity-row', { state: 'visible', timeout: 30000 });
 
