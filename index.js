@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { chromium } from "playwright";
-// import { sendEmail } from "./sendEmail.js";
+import { sendEmail } from "./sendEmail.js";
 
 dotenv.config();
 
@@ -18,17 +18,15 @@ inputUrl.searchParams.set("from", queryParamConformDate);
 const url = inputUrl.toString();
 
 const run = async () => {
-  console.log(url);
-
   const browser = await chromium.launch({
     tracesDir: "traces",
   });
   const context = await browser.newContext({
-    locale: 'en-US'
+    locale: "en-US",
   });
-  await context.tracing.start({ screenshots: true, snapshots: true });
   const page = await context.newPage();
 
+  // set to a fixed view port to have uniform images
   await page.setViewportSize({ width: 1280, height: 800 });
   // disable animations for consistent screenshots
   await page.addStyleTag({
@@ -98,15 +96,11 @@ const run = async () => {
   // Dismiss any lingering tooltip (from the open settings button) by clicking outside
   await page.locator("body").click();
 
-  console.log(await page.content());
-
-  await context.tracing.stop({ path: "trace.zip" });
-
   // wait until at least one table row is rendered and fail if it is not to avoid sending empty mails
-  // await page.waitForSelector("table tr.activity-row", {
-  //   state: "visible",
-  //   timeout: 30000,
-  // });
+  await page.waitForSelector("table tr.activity-row", {
+    state: "visible",
+    timeout: 30000,
+  });
 
   // Scroll to the bottom and take a full-page screenshot
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -115,19 +109,19 @@ const run = async () => {
 
   await browser.close();
 
-  // await sendEmail({
-  //   attachmentPath: screenshotPath,
-  //   statsHuntersUrl: url,
-  //   senderMail: process.env.SENDER_MAIL ?? process.env.SMTP_USER,
-  //   author: participantName,
-  //   receiverMail: process.env.RECEIVER_MAIL,
-  //   smtp: {
-  //     host: process.env.SMTP_HOST,
-  //     port: process.env.SMTP_PORT,
-  //     user: process.env.SMTP_USER,
-  //     pass: process.env.SMTP_PASS,
-  //   },
-  // });
+  await sendEmail({
+    attachmentPath: screenshotPath,
+    statsHuntersUrl: url,
+    senderMail: process.env.SENDER_MAIL ?? process.env.SMTP_USER,
+    author: participantName,
+    receiverMail: process.env.RECEIVER_MAIL,
+    smtp: {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
 };
 
 run();
