@@ -20,6 +20,11 @@ const run = async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
+  await page.setViewportSize({ width: 1280, height: 800 });
+  // disable animations for consistent screenshots
+  await page.addStyleTag({ content: `* { transition: none !important; animation: none !important; }` });
+
+
   await page.goto(url, { waitUntil: "networkidle" });
 
   // Wait for the initial data sync dialog and extract the participant name
@@ -82,6 +87,9 @@ const run = async () => {
 
   // Dismiss any lingering tooltip (from the open settings button) by clicking outside
   await page.locator("body").click();
+
+  // wait until at least one table row is rendered and fail if it is not to avoid sending empty mails
+  await page.waitForSelector('table tr.activity-row', { state: 'visible', timeout: 30000 });
 
   // Scroll to the bottom and take a full-page screenshot
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
