@@ -22,9 +22,12 @@ jobs:
 
       - run: node index.js
         env:
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          STATSHUNTERS_USERNAME: ${{ secrets.STATSHUNTERS_USERNAME }}
+          STATS_HUNTERS_SHARE_URL: ${{ vars.STATS_HUNTERS_SHARE_URL }}
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          SMTP_USER: ${{ vars.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          RECEIVER_MAIL: ${{ vars.RECEIVER_MAIL }}
 
       - name: Upload screenshot as artifact
         uses: actions/upload-artifact@v4
