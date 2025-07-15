@@ -1,0 +1,33 @@
+name: Send Daily Screenshot
+
+on:
+  schedule:
+    - cron: "00 21 * * *" # 23:00 Berlin time => 21:00 UTC
+  workflow_dispatch:
+
+jobs:
+  send-screenshot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      - run: npx playwright install --with-deps
+
+      - run: node index.js
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          STATSHUNTERS_USERNAME: ${{ secrets.STATSHUNTERS_USERNAME }}
+
+      - name: Upload screenshot as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-activity-screenshot
+          path: images/daily-activity.png
