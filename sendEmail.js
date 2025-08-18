@@ -5,6 +5,7 @@ export async function sendEmail({
   statsHuntersUrl,
   senderMail,
   author,
+  date,
   receiverMail,
   smtp: { host, port, user, pass },
 }) {
@@ -18,19 +19,21 @@ export async function sendEmail({
     },
   });
 
-  const info = await transporter.sendMail({
-    from: `"${author}" <${senderMail}>`,
-    to: receiverMail,
-    subject: `Meter Challenge – Daily Stats from ${author}, ${new Intl.DateTimeFormat(
+  const formattedDate = new Intl.DateTimeFormat(
       "en",
       {
         dateStyle: "short",
       }
-    ).format(new Date())}`,
+    ).format(date);
+
+  const info = await transporter.sendMail({
+    from: `"${author}" <${senderMail}>`,
+    to: receiverMail,
+    subject: `Meter Challenge – Daily Stats from ${author}, ${formattedDate}`,
     text: `Reporting my activities for today, aggregated by statshunters powered by strava: ${statsHuntersUrl}`,
     attachments: [
       {
-        filename: `activity-${new Date().toISOString()}.png`,
+        filename: `activity-${date.toISOString()}.png`,
         path: attachmentPath,
       },
     ],

@@ -7,7 +7,10 @@ dotenv.config();
 const screenshotPath = `images/daily-activity.png`;
 
 const today = new Date();
-const queryParamConformDate = today
+const yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
+
+const queryParamConformDate = yesterday
   .toISOString()
   .slice(0, 10)
   .replace(/-/g, ""); // e.g. "20250715"
@@ -112,6 +115,7 @@ const run = async () => {
   await sendEmail({
     attachmentPath: screenshotPath,
     statsHuntersUrl: url,
+    date: yesterday,
     senderMail: process.env.SENDER_MAIL ?? process.env.SMTP_USER,
     author: participantName,
     receiverMail: process.env.RECEIVER_MAIL,
