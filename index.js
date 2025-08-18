@@ -56,13 +56,16 @@ const run = async () => {
   await page.locator(".menu-help").click();
 
   // Add the participant name to the totals element for clarity in the screenshot
-  await page.evaluate((name) => {
-    const totalEl = document.getElementById("total");
-    if (totalEl)
-      totalEl.textContent += ` – ${name}, ${new Intl.DateTimeFormat("en", {
-        dateStyle: "short",
-      }).format(new Date())}`;
-  }, participantName);
+  await page.evaluate(
+    ({ name, date }) => {
+      const totalEl = document.getElementById("total");
+      if (totalEl)
+        totalEl.textContent += ` – ${name}, ${new Intl.DateTimeFormat("en", {
+          dateStyle: "short",
+        }).format(date)}`;
+    },
+    { name: participantName, date: yesterday }
+  );
 
   // Open column visibility settings
   await page.getByRole("button", { name: "Show activities settings" }).click();
