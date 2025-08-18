@@ -2,7 +2,7 @@ name: Send Daily Screenshot
 
 on:
   schedule:
-    - cron: "00 21 * * *" # 23:00 Berlin time => 21:00 UTC
+    - cron: "5 0 * * *" # 00:05 UTC (after daily limit reset), 02:05 Berlin
   workflow_dispatch:
 
 jobs:
